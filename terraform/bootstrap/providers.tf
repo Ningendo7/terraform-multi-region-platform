@@ -1,14 +1,14 @@
 provider "aws" {
 
-         region = var.region
+  region = var.region
 
-         default_tags {
-                  tags = {
-                           Project = var.project_name
-                           Environment = var.environment
-                           ManagedBy = "Terraform"
-                           Repository = "terraform-multi-region-platform"
-                  }
-         }
-  
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Repository  = "terraform-multi-region-platform"
+    }
+  }
+
 }

@@ -2,6 +2,7 @@
 
 This Terraform configuration provisions the infrastructure required for Terraform itself, including:
 
+- KMS key
 - Remote state bucket
 - Encryption
 - State Locking
