@@ -15,3 +15,10 @@ module "state_bucket" {
   kms_key_arn = module.kms.key_arn
   environment = var.environment
 }
+
+module "terraform_lock" {
+         source = "../modules/dynamodb-lock"
+
+         table_name = "${var.project_name}-terraform-lock"
+         environment = var.environment
+}
