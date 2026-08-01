@@ -1,0 +1,5 @@
+project_name = "terraform-multi-region-platform"
+
+environment = "bootstrap"
+
+region = "us-east-1"
