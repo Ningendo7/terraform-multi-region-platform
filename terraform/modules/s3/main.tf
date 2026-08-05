@@ -21,6 +21,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
       sse_algorithm     = "aws:kms"
       kms_master_key_id = var.kms_key_arn
     }
+
+    bucket_key_enabled = true
+
   }
 }
 
@@ -39,4 +42,50 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   rule {
     object_ownership = "BucketOwnerEnforced"
   }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    id     = "cleanup-old-versions"
+    status = "Enabled"
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+  }
+}
+
+data "aws_iam_policy_document" "tls_only" {
+  statement {
+    sid = "DenyInsecureTransport"
+
+    effect = "Deny"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = ["s3:*"]
+
+    resources = [
+
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*"
+
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "this" {
+  bucket = aws_s3_bucket.this.id
+  policy = data.aws_iam_policy_document.tls_only.json
 }

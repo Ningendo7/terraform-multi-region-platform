@@ -10,3 +10,8 @@ variable "environment" {
          type = string
   
 }
+
+variable "kms_key_arn" {
+         description = "KMS Key ARN for server-side encryption."
+         type = string
+}

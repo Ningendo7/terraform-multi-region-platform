@@ -22,3 +22,17 @@ variable "enable_key_rotation" {
   default     = true
 
 }
+
+variable "deletion_window_in_days" {
+  description = "The waiting period before the KMS key is deleted."
+  type        = number
+  default     = 30
+
+}
+
+variable "multi_region" {
+  description = "Whether the KMS key is multi-region."
+  type        = bool
+  default     = false
+
+}
