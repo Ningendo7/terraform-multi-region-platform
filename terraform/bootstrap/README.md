@@ -9,3 +9,7 @@ This Terraform configuration provisions the infrastructure required for Terrafor
 - Supporting IAM resources
 
 This stack is deployed once before any other Terraform configuration.
+
+# Bootstrap intentionally uses local state.
+# This layer creates the remote Terraform backend consumed by global
+# and regional layers

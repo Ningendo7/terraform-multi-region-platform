@@ -11,7 +11,7 @@ module "kms" {
 module "state_bucket" {
   source = "../modules/s3"
 
-  bucket_name = "${var.project_name}-terraform-state"
+  bucket_name = "${var.project_name}-${var.environment}-terraform-state"
   kms_key_arn = module.kms.key_arn
   environment = var.environment
 }
@@ -19,7 +19,7 @@ module "state_bucket" {
 module "terraform_lock" {
   source = "../modules/dynamodb-lock"
 
-  table_name  = "${var.project_name}-terraform-lock"
+  table_name  = "${var.project_name}-${var.environment}-terraform-lock"
   environment = var.environment
   kms_key_arn = module.kms.key_arn
 }
