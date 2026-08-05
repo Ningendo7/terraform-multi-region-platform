@@ -21,6 +21,10 @@ resource "aws_dynamodb_table" "this" {
            enabled = true
          }
 
+         lifecycle {
+           prevent_destroy = false
+         }
+
          tags = local.tags
   
 }
