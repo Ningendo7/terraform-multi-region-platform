@@ -12,10 +12,10 @@ func Doctor() {
 	fmt.Println("----------------------------")
 
 	tools := []string{
-		"terraform", 
-		"aws", 
-		"kubectl", 
-		"helm", 
+		"terraform",
+		"aws",
+		"kubectl",
+		"helm",
 		"git",
 	}
 

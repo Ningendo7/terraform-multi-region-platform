@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-
 )
 
 func Execute(args []string) error {

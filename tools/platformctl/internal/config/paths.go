@@ -35,12 +35,13 @@ func ResolveStack(stack Stack) (string, error) {
 		return "", err
 	}
 
+	base := filepath.Join(root, "terraform", "environments", Environment)
+
 	switch stack.Scope {
 
 	case ScopeBootstrap:
 		return filepath.Join(
-			root,
-			"terraform",
+			base,
 			"bootstrap",
 		), nil
 
@@ -51,8 +52,7 @@ func ResolveStack(stack Stack) (string, error) {
 		}
 
 		return filepath.Join(
-			root,
-			"terraform",
+			base,
 			"global",
 			stack.Name,
 		), nil
@@ -64,8 +64,7 @@ func ResolveStack(stack Stack) (string, error) {
 		}
 
 		return filepath.Join(
-			root,
-			"terraform",
+			base,
 			"regions",
 			stack.Region,
 			stack.Name,

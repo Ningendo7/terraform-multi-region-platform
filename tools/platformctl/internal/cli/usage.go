@@ -4,7 +4,7 @@ import "fmt"
 
 func Usage() {
 
-	fmt.Println(`
+	fmt.Print(`
 Usage:
 	platformctl <command> <scope> <stack>
 

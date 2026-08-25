@@ -1,10 +1,8 @@
 package config
 
 type Stack struct {
-
-	Scope string
+	Scope  string
 	Region string
-	Name  string
-	Path  string
-
+	Name   string
+	Path   string
 }

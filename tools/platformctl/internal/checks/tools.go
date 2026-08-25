@@ -3,7 +3,6 @@ package checks
 import (
 	"fmt"
 	"os/exec"
-
 )
 
 func CheckCommand(command string) {

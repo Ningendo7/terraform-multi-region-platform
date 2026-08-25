@@ -14,8 +14,12 @@ func Init(stack config.Stack) error {
 		return err
 	}
 
+	backendConfig, err := config.BackendConfig(stack)
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("Initializing stack: %s\n", path)
 
-	return terraform.Init(path)
+	return terraform.Init(path, backendConfig)
 }
-	
