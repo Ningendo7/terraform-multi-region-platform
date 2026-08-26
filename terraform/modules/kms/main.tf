@@ -1,8 +1,8 @@
 resource "aws_kms_key" "this" {
-  description         = var.description
-  enable_key_rotation = var.enable_key_rotation
+  description             = var.description
+  enable_key_rotation     = var.enable_key_rotation
   deletion_window_in_days = var.deletion_window_in_days
-  multi_region = var.multi_region
+  multi_region            = var.multi_region
 
   tags = {
     Name = local.name

@@ -68,7 +68,7 @@ func TestBackendConfig(t *testing.T) {
 				t.Fatalf("BackendConfig(%+v) key = %q, want %q", c.stack, got["key"], c.wantKey)
 			}
 
-			for _, field := range []string{"bucket", "region", "dynamodb_table", "encrypt"} {
+			for _, field := range []string{"bucket", "region", "use_lockfile", "encrypt"} {
 				if got[field] == "" {
 					t.Fatalf("BackendConfig(%+v) missing %q", c.stack, field)
 				}

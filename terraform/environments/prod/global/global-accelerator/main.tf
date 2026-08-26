@@ -1,7 +1,7 @@
 resource "aws_globalaccelerator_accelerator" "this" {
-  name               = var.accelerator_name
-  enabled            = true
-  ip_address_type    = "IPV4"
+  name            = var.accelerator_name
+  enabled         = true
+  ip_address_type = "IPV4"
 
   tags = {
     Name = var.accelerator_name

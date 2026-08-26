@@ -10,4 +10,5 @@ provider "aws" {
       ManagedBy   = "Terraform"
     }
   }
+
 }

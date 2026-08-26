@@ -1,7 +1,7 @@
 output "accelerator_arn" {
-         description = "The ARN of the Global Accelerator."
-         value       = aws_globalaccelerator_accelerator.this.arn
-  
+  description = "The ARN of the Global Accelerator."
+  value       = aws_globalaccelerator_accelerator.this.arn
+
 }
 
 output "listener_arn" {

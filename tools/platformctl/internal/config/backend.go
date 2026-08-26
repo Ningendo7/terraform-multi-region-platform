@@ -6,14 +6,10 @@ func stateBucket() string {
 	return fmt.Sprintf("%s-%s-terraform-state", ProjectName, Environment)
 }
 
-func lockTable() string {
-	return fmt.Sprintf("%s-%s-terraform-lock", ProjectName, Environment)
-}
-
 // BackendConfig computes the terraform init -backend-config values for a
 // stack. Bootstrap returns (nil, nil): it keeps local state, since it's
-// what provisions the shared state bucket and lock table every other
-// stack's backend config points at here.
+// what provisions the shared state bucket every other stack's backend
+// config points at here.
 func BackendConfig(stack Stack) (map[string]string, error) {
 
 	if stack.Scope == ScopeBootstrap {
@@ -41,10 +37,10 @@ func BackendConfig(stack Stack) (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"bucket":         stateBucket(),
-		"key":            key,
-		"region":         StateRegion,
-		"dynamodb_table": lockTable(),
-		"encrypt":        "true",
+		"bucket":       stateBucket(),
+		"key":          key,
+		"region":       StateRegion,
+		"use_lockfile": "true",
+		"encrypt":      "true",
 	}, nil
 }
