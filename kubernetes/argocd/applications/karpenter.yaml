@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karpenter
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: oci://public.ecr.aws/karpenter/karpenter
+    chart: karpenter
+    targetRevision: "1.0.6"
+    helm:
+      values: |
+        settings:
+          clusterName: terraform-multi-region-platform-prod
+
+        serviceAccount:
+          name: karpenter
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-karpenter-controller
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
