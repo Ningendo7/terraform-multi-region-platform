@@ -63,17 +63,16 @@ resource "aws_eks_access_policy_association" "admin" {
   }
 }
 
-# --- EKS Pod Identity: lets Kubernetes service accounts assume IAM
-# roles via a direct AWS-side association (cluster, namespace, service
-# account) -> role, instead of IRSA's OIDC federation + role-arn
-# annotation. Chosen specifically so GitOps manifests never need an
-# account-specific role ARN baked into committed YAML — the mapping
-# lives entirely in this Terraform state.
+# --- IRSA: lets Kubernetes service accounts assume IAM roles via OIDC ---
 
-resource "aws_eks_addon" "pod_identity_agent" {
-  cluster_name                = aws_eks_cluster.this.name
-  addon_name                  = "eks-pod-identity-agent"
-  resolve_conflicts_on_update = "OVERWRITE"
+data "tls_certificate" "cluster" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "cluster" {
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.cluster.certificates[0].sha1_fingerprint]
 
   tags = local.tags
 }
@@ -126,19 +125,30 @@ resource "aws_iam_instance_profile" "node" {
   role = aws_iam_role.node.name
 }
 
-# --- Karpenter controller Pod Identity role ---
-# Trust is scoped by the aws_eks_pod_identity_association below (which
-# names the exact namespace + service account) — this policy just
-# trusts the Pod Identity service itself to assume the role at all.
+# --- Karpenter controller IRSA role ---
+# Trusts only the specific Kubernetes service account Karpenter runs
+# as, via the OIDC provider above — not "anything in the cluster."
 
 data "aws_iam_policy_document" "karpenter_assume" {
   statement {
     effect  = "Allow"
-    actions = ["sts:AssumeRole", "sts:TagSession"]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
-      type        = "Service"
-      identifiers = ["pods.eks.amazonaws.com"]
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.cluster.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_issuer_host}:sub"
+      values   = ["system:serviceaccount:kube-system:karpenter"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_issuer_host}:aud"
+      values   = ["sts.amazonaws.com"]
     }
   }
 }
@@ -147,15 +157,6 @@ resource "aws_iam_role" "karpenter_controller" {
   name               = "${local.name}-karpenter-controller"
   assume_role_policy = data.aws_iam_policy_document.karpenter_assume.json
   tags               = local.tags
-}
-
-resource "aws_eks_pod_identity_association" "karpenter" {
-  cluster_name    = aws_eks_cluster.this.name
-  namespace       = "kube-system"
-  service_account = "karpenter"
-  role_arn        = aws_iam_role.karpenter_controller.arn
-
-  depends_on = [aws_eks_addon.pod_identity_agent]
 }
 
 data "aws_iam_policy_document" "karpenter_controller" {
@@ -261,17 +262,30 @@ resource "aws_eks_fargate_profile" "kube_system" {
   }
 }
 
-# --- AWS Load Balancer Controller Pod Identity role ---
-# Same pattern as Karpenter's role above.
+# --- AWS Load Balancer Controller IRSA role ---
+# Same pattern as Karpenter's role above — trusts only the specific
+# Kubernetes service account the controller runs as.
 
 data "aws_iam_policy_document" "lb_controller_assume" {
   statement {
     effect  = "Allow"
-    actions = ["sts:AssumeRole", "sts:TagSession"]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
-      type        = "Service"
-      identifiers = ["pods.eks.amazonaws.com"]
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.cluster.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_issuer_host}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_issuer_host}:aud"
+      values   = ["sts.amazonaws.com"]
     }
   }
 }
@@ -280,15 +294,6 @@ resource "aws_iam_role" "lb_controller" {
   name               = "${local.name}-lb-controller"
   assume_role_policy = data.aws_iam_policy_document.lb_controller_assume.json
   tags               = local.tags
-}
-
-resource "aws_eks_pod_identity_association" "lb_controller" {
-  cluster_name    = aws_eks_cluster.this.name
-  namespace       = "kube-system"
-  service_account = "aws-load-balancer-controller"
-  role_arn        = aws_iam_role.lb_controller.arn
-
-  depends_on = [aws_eks_addon.pod_identity_agent]
 }
 
 # Reproduced from the IAM policy AWS publishes for this controller —

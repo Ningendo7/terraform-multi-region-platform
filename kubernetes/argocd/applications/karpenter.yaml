@@ -17,10 +17,15 @@ spec:
 
         serviceAccount:
           name: karpenter
-          # No role-arn annotation — this service account's IAM role is
-          # granted via an aws_eks_pod_identity_association in Terraform
-          # (modules/eks), not an IRSA annotation. Keeps this file free
-          # of any account-specific information.
+          # Back to IRSA — EKS Pod Identity does not support Fargate,
+          # and this controller has to run on Fargate (that's the whole
+          # reason the kube-system Fargate profile exists: to bootstrap
+          # it before any EC2 node exists). The account ID below is a
+          # real, necessary tradeoff of that constraint, not an
+          # oversight — see modules/eks for the corresponding OIDC
+          # trust policy.
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-karpenter-controller
 
   destination:
     server: https://kubernetes.default.svc

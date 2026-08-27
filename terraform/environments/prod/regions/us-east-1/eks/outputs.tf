@@ -8,6 +8,11 @@ output "cluster_endpoint" {
   value       = module.eks.cluster_endpoint
 }
 
+output "oidc_provider_arn" {
+  description = "ARN of the cluster's IAM OIDC provider."
+  value       = module.eks.oidc_provider_arn
+}
+
 output "karpenter_controller_role_arn" {
   description = "ARN of the IAM role Karpenter's service account assumes."
   value       = module.eks.karpenter_controller_role_arn
