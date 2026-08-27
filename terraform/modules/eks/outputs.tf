@@ -13,11 +13,6 @@ output "cluster_certificate_authority_data" {
   value       = aws_eks_cluster.this.certificate_authority[0].data
 }
 
-output "oidc_provider_arn" {
-  description = "ARN of the cluster's IAM OIDC provider, used to build further IRSA roles."
-  value       = aws_iam_openid_connect_provider.cluster.arn
-}
-
 output "karpenter_controller_role_arn" {
   description = "ARN of the IAM role Karpenter's Kubernetes service account assumes."
   value       = aws_iam_role.karpenter_controller.arn
@@ -31,6 +26,11 @@ output "node_iam_role_arn" {
 output "node_instance_profile_name" {
   description = "Name of the instance profile Karpenter attaches to nodes it launches."
   value       = aws_iam_instance_profile.node.name
+}
+
+output "fargate_pod_execution_role_arn" {
+  description = "ARN of the Fargate pod execution role — reusable across any additional Fargate profiles (e.g. one for argocd's namespace) so IAM doesn't need to be duplicated per profile."
+  value       = aws_iam_role.fargate.arn
 }
 
 output "cluster_security_group_id" {

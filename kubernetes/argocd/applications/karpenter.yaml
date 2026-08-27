@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: oci://public.ecr.aws/karpenter
+    repoURL: public.ecr.aws/karpenter
     chart: karpenter
     targetRevision: "1.0.6"
     helm:
@@ -17,8 +17,10 @@ spec:
 
         serviceAccount:
           name: karpenter
-          annotations:
-            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-karpenter-controller
+          # No role-arn annotation — this service account's IAM role is
+          # granted via an aws_eks_pod_identity_association in Terraform
+          # (modules/eks), not an IRSA annotation. Keeps this file free
+          # of any account-specific information.
 
   destination:
     server: https://kubernetes.default.svc
