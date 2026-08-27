@@ -16,10 +16,15 @@ module "eks" {
   project_name = "terraform-multi-region-platform"
   environment  = "prod"
 
-  # No try()/fallback here on purpose — an EKS cluster genuinely cannot
-  # exist without a VPC, so this plan is *supposed* to fail until the
-  # vpc stack is actually applied. Papering over that with a default
-  # would just produce a plan that isn't meaningful.
+  # No try()/fallback here — confirmed this actually matters, not just
+  # in theory: unlike bootstrap's local-state read (empty-but-valid
+  # when unapplied), the S3-backed remote_state above hard-errors with
+  # "Unable to find remote state" when vpc hasn't been applied yet.
+  # try() wraps the *attribute access*, but this failure happens at the
+  # data source read itself, before any attribute is touched — so it
+  # couldn't have been rescued that way even if we wanted to. The real
+  # fix is just: apply vpc first. That's the correct dependency order,
+  # not a workaround to design around.
   vpc_id             = data.terraform_remote_state.vpc.outputs.vpc_id
   private_subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnet_ids
   public_subnet_ids  = data.terraform_remote_state.vpc.outputs.public_subnet_ids

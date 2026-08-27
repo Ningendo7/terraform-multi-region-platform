@@ -1,4 +1,4 @@
 locals {
 
-  name = "${var.project_name}-${var.environment}"
+  name = var.name_suffix != "" ? "${var.project_name}-${var.environment}-${var.name_suffix}" : "${var.project_name}-${var.environment}"
 }

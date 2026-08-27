@@ -36,3 +36,15 @@ variable "multi_region" {
   default     = false
 
 }
+
+variable "enable_cloudwatch_logs" {
+  description = "Whether to grant the CloudWatch Logs service principal permission to use this key for log group encryption."
+  type        = bool
+  default     = false
+}
+
+variable "name_suffix" {
+  description = "Optional suffix appended to the key's name/alias, for distinguishing multiple keys within the same project/environment. Leave empty to preserve the default naming."
+  type        = string
+  default     = ""
+}
