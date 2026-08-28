@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://kubernetes-sigs.github.io/external-dns
+    chart: external-dns
+    targetRevision: "1.21.1"
+    helm:
+      values: |
+        provider:
+          name: aws
+
+        serviceAccount:
+          create: true
+          name: external-dns
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-external-dns
+
+        domainFilters:
+          - tendo.pro
+
+        txtOwnerId: terraform-multi-region-platform-prod
+
+        policy: sync
+
+        extraArgs:
+          aws-region: us-east-1
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
