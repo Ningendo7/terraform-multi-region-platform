@@ -51,6 +51,22 @@ spec:
           tls:
             enabled: false
 
+        # Grafana's own liveness probe (60s initial delay, 10 failures *
+        # 10s period ≈ 160s total grace) is tuned for the old, faster
+        # startup. Its current grafana-apiserver init sequence has been
+        # observed taking 2-3+ minutes on Fargate, so the default grace
+        # period kills it mid-startup — an infinite restart loop, not a
+        # real crash. Widening the grace period fixes it at the cause
+        # instead of just tolerating the restarts.
+        grafana:
+          livenessProbe:
+            initialDelaySeconds: 120
+            failureThreshold: 15
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            initialDelaySeconds: 60
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
