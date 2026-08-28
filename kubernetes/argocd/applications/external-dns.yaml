@@ -28,8 +28,9 @@ spec:
 
         policy: sync
 
-        extraArgs:
-          aws-region: us-east-1
+        env:
+          - name: AWS_DEFAULT_REGION
+            value: us-east-1
 
   destination:
     server: https://kubernetes.default.svc
