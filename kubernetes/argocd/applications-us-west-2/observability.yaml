@@ -43,6 +43,13 @@ spec:
         prometheusOperator:
           admissionWebhooks:
             enabled: false
+          # Separate from admissionWebhooks.enabled — this is the
+          # operator's own --web.enable-tls flag, which (independently)
+          # expects a cert from the same disabled admission-webhook Job.
+          # Without turning this off too, the operator pod stays stuck
+          # on a FailedMount for a secret that's never going to exist.
+          tls:
+            enabled: false
 
   destination:
     server: https://kubernetes.default.svc
