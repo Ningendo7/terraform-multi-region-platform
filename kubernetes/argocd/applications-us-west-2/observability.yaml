@@ -33,6 +33,17 @@ spec:
           prometheusSpec:
             retention: 24h
 
+        # Disabled — the admission webhook's cert-generation PreSync
+        # hook Job got ArgoCD's operation tracking stuck twice in a row
+        # (an ArgoCD-side caching issue, not a real failure: the Job
+        # itself completed fine both times, ArgoCD just never noticed).
+        # Not required for the stack to function — it only pre-validates
+        # Prometheus/Alertmanager CRs before they're accepted, which is
+        # a nice-to-have, not load-bearing.
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
