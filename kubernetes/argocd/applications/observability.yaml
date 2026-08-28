@@ -32,6 +32,18 @@ spec:
         prometheus:
           prometheusSpec:
             retention: 24h
+            # No resources set by default → Fargate sizes the pod small,
+            # and evaluating this chart's ~35 default PrometheusRule
+            # groups under that CPU ceiling makes the -/healthy and
+            # -/ready endpoints slow enough to blow the liveness probe's
+            # timeout — observed as repeated restarts, not a real crash.
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                cpu: "1"
+                memory: 2Gi
 
         # Disabled — the admission webhook's cert-generation PreSync
         # hook Job got ArgoCD's operation tracking stuck twice in a row
