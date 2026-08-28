@@ -18,8 +18,14 @@ spec:
         # doesn't expose EC2 instance metadata the way real nodes do,
         # so the chart's default IMDS-based auto-detection for these
         # two values can't be relied on here.
+        #
+        # NOTE: vpcId is AWS-assigned, not something we control the
+        # naming of (unlike region/environment) — it changes every time
+        # the vpc stack is destroyed and recreated. Update this value
+        # after any fresh `vpc` apply, same as re-running
+        # `aws eks update-kubeconfig` after a fresh `eks` apply.
         region: us-east-1
-        vpcId: vpc-0c37413136160925c
+        vpcId: vpc-04bcd7384c821cea3
 
         serviceAccount:
           create: true
