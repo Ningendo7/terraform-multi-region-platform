@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws-load-balancer-controller
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://aws.github.io/eks-charts
+    chart: aws-load-balancer-controller
+    targetRevision: "3.5.0"
+    helm:
+      values: |
+        clusterName: terraform-multi-region-platform-prod
+
+        # Explicit, not auto-detected — this runs on Fargate, which
+        # doesn't expose EC2 instance metadata the way real nodes do,
+        # so the chart's default IMDS-based auto-detection for these
+        # two values can't be relied on here.
+        region: us-east-1
+        vpcId: vpc-0c37413136160925c
+
+        serviceAccount:
+          create: true
+          name: aws-load-balancer-controller
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-lb-controller
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

@@ -16,6 +16,7 @@ spec:
           clusterName: terraform-multi-region-platform-prod
 
         serviceAccount:
+          create: true
           name: karpenter
           # Back to IRSA — EKS Pod Identity does not support Fargate,
           # and this controller has to run on Fargate (that's the whole
