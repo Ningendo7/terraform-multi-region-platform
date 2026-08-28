@@ -95,6 +95,17 @@ spec:
             timeoutSeconds: 30
           readinessProbe:
             initialDelaySeconds: 60
+          # Same story as the operator and Prometheus: no resources set
+          # meant Fargate's default was too small, and this version's
+          # apiserver-based startup genuinely needs more than that —
+          # observed as OOMKilled, not a probe-timing issue.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 
   destination:
     server: https://kubernetes.default.svc
