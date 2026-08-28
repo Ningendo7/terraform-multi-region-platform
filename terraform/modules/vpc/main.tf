@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "flow_logs_assume" {
 resource "aws_iam_role" "flow_logs" {
   count = var.enable_flow_logs ? 1 : 0
 
-  name               = "${local.name}-vpc-flow-logs"
+  name               = "${local.iam_name}-vpc-flow-logs"
   assume_role_policy = data.aws_iam_policy_document.flow_logs_assume[0].json
 
   tags = local.tags
@@ -167,7 +167,7 @@ data "aws_iam_policy_document" "flow_logs_delivery" {
 resource "aws_iam_role_policy" "flow_logs" {
   count = var.enable_flow_logs ? 1 : 0
 
-  name   = "${local.name}-vpc-flow-logs"
+  name   = "${local.iam_name}-vpc-flow-logs"
   role   = aws_iam_role.flow_logs[0].id
   policy = data.aws_iam_policy_document.flow_logs_delivery[0].json
 }

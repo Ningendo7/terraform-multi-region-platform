@@ -28,4 +28,8 @@ module "eks" {
   vpc_id             = data.terraform_remote_state.vpc.outputs.vpc_id
   private_subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnet_ids
   public_subnet_ids  = data.terraform_remote_state.vpc.outputs.public_subnet_ids
+
+  # Pre-existing zone, not managed by this Terraform project — stable
+  # across destroy/recreate cycles here, unlike vpc_id above.
+  route53_zone_arn = "arn:aws:route53:::hostedzone/Z02533231WT3LO3AOOYF2"
 }

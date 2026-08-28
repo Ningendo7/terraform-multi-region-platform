@@ -46,3 +46,14 @@ variable "public_access_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "route53_zone_arn" {
+  description = "ARN of the pre-existing Route53 hosted zone ExternalDNS is allowed to write to. Not something this module manages the lifecycle of — the zone already exists outside Terraform."
+  type        = string
+}
+
+variable "name_suffix" {
+  description = "Optional suffix appended only to IAM role/instance-profile names, which are account-wide unique unlike the cluster name itself. Needed once this module is called more than once in the same account (e.g. a second region) with the same project_name/environment. Leave empty to preserve existing naming."
+  type        = string
+  default     = ""
+}

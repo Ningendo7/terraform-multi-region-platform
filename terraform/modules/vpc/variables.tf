@@ -49,3 +49,9 @@ variable "private_subnet_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "name_suffix" {
+  description = "Optional suffix appended only to this module's IAM role name (flow_logs), which is account-wide unique unlike everything else here (VPC/subnet/NAT tags, CloudWatch log group names — all regional, no collision risk). Needed once this module is called more than once in the same account (e.g. a second region) with the same project_name/environment. Leave empty to preserve existing naming."
+  type        = string
+  default     = ""
+}

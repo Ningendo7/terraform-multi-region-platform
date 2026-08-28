@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://kubernetes-sigs.github.io/external-dns
+    chart: external-dns
+    targetRevision: "1.21.1"
+    helm:
+      values: |
+        provider:
+          name: aws
+
+        serviceAccount:
+          create: true
+          name: external-dns
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-usw2-external-dns
+
+        domainFilters:
+          - tendo.pro
+
+        # Distinct from us-east-1's txtOwnerId on purpose — two
+        # ExternalDNS instances managing the same zone need different
+        # owner IDs so their ownership TXT records don't collide.
+        txtOwnerId: terraform-multi-region-platform-prod-us-west-2
+
+        policy: sync
+
+        env:
+          - name: AWS_DEFAULT_REGION
+            value: us-west-2
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

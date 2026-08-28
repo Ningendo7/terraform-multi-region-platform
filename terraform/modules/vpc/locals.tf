@@ -2,6 +2,10 @@ locals {
 
   name = "${var.project_name}-${var.environment}"
 
+  # Only for the account-wide-unique IAM role name — see name_suffix's
+  # description. Everything else keeps using local.name unchanged.
+  iam_name = var.name_suffix != "" ? "${local.name}-${var.name_suffix}" : local.name
+
   azs = slice(data.aws_availability_zones.available.names, 0, var.az_count)
 
   # A /16 VPC split into /20s: public subnets take indices 0-2, private

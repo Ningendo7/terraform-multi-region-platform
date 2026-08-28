@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-app
+  namespace: demo
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # Distinct from us-east-1's demo.tendo.pro on purpose — two
+    # independent ExternalDNS instances (one per region, different
+    # txtOwnerId) both trying to own the same record name would
+    # conflict. Unifying these under one hostname with real
+    # latency/geo routing is exactly what Global Accelerator/Route53
+    # routing policies are for, later — not something to fake here.
+    external-dns.alpha.kubernetes.io/hostname: demo-us-west-2.tendo.pro
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-app
+                port:
+                  number: 80

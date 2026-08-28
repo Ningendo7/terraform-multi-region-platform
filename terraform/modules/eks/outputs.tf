@@ -47,3 +47,8 @@ output "fargate_pod_execution_role_arn" {
   description = "ARN of the Fargate pod execution role — reusable across any additional Fargate profiles (e.g. one for argocd's namespace) so IAM doesn't need to be duplicated per profile."
   value       = aws_iam_role.fargate.arn
 }
+
+output "external_dns_role_arn" {
+  description = "ARN of the IAM role ExternalDNS's service account assumes."
+  value       = aws_iam_role.external_dns.arn
+}

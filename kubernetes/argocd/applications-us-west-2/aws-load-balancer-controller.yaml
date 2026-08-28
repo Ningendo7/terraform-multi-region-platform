@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws-load-balancer-controller
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://aws.github.io/eks-charts
+    chart: aws-load-balancer-controller
+    targetRevision: "3.5.0"
+    helm:
+      values: |
+        clusterName: terraform-multi-region-platform-prod
+
+        # Explicit, not auto-detected — same reasoning as us-east-1's.
+        #
+        # NOTE: vpcId is a placeholder — fill in with the real VPC ID
+        # after the us-west-2 vpc stack is actually applied (same as
+        # we had to do for us-east-1 after a vpc recreate).
+        region: us-west-2
+        vpcId: REPLACE_AFTER_VPC_APPLY
+
+        serviceAccount:
+          create: true
+          name: aws-load-balancer-controller
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-usw2-lb-controller
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
