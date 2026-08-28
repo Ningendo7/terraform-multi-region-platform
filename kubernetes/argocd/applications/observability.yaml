@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: "88.6.1"
+    helm:
+      values: |
+        # Fargate doesn't support DaemonSets — node-exporter would sit
+        # permanently Pending, same as every other DaemonSet-on-Fargate
+        # gotcha this cluster has hit. Pod/container-level metrics still
+        # work fine via kube-state-metrics and the kubelet's own metrics
+        # endpoint; only host-level stats (disk/network at the node
+        # level) are unavailable, which don't really apply to Fargate's
+        # compute model anyway.
+        nodeExporter:
+          enabled: false
+
+        # Ephemeral storage on purpose for this pass — Fargate only
+        # supports EFS for persistent volumes (not EBS, since there's
+        # no real instance to attach a volume to), and that's real
+        # additional infrastructure not built yet. Short retention
+        # keeps it from filling Fargate's default ephemeral storage;
+        # metric data loss on pod restart is an accepted tradeoff here,
+        # not an oversight.
+        prometheus:
+          prometheusSpec:
+            retention: 24h
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # kube-prometheus-stack's CRDs are large enough to exceed the
+      # 256KiB annotation limit kubectl's client-side apply relies on —
+      # a well-documented, common failure with this exact chart.
+      # Server-side apply avoids it entirely.
+      - ServerSideApply=true
