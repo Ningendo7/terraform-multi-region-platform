@@ -16,11 +16,11 @@ spec:
 
         # Explicit, not auto-detected — same reasoning as us-east-1's.
         #
-        # NOTE: vpcId is a placeholder — fill in with the real VPC ID
-        # after the us-west-2 vpc stack is actually applied (same as
-        # we had to do for us-east-1 after a vpc recreate).
+        # NOTE: vpcId is AWS-assigned — it changes every time the vpc
+        # stack is destroyed and recreated. Update this value after any
+        # fresh `vpc` apply.
         region: us-west-2
-        vpcId: REPLACE_AFTER_VPC_APPLY
+        vpcId: vpc-0567f24c9fd573f51
 
         serviceAccount:
           create: true
