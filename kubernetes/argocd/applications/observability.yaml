@@ -45,6 +45,23 @@ spec:
                 cpu: "1"
                 memory: 2Gi
 
+        # EKS manages the control plane — these components' metrics
+        # endpoints were never reachable on this cluster to begin with.
+        # Monitoring them isn't just dead weight, it's actively part of
+        # what pushed Prometheus's rule-evaluation load (and this
+        # account's tight Fargate vCPU quota) past what it could handle.
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        # Fargate doesn't run kube-proxy — no node-level networking
+        # layer to monitor here either (see modules/eks ALB target-type
+        # notes for the same reason).
+        kubeProxy:
+          enabled: false
+
         # Disabled — the admission webhook's cert-generation PreSync
         # hook Job got ArgoCD's operation tracking stuck twice in a row
         # (an ArgoCD-side caching issue, not a real failure: the Job
