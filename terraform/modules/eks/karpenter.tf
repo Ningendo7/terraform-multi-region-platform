@@ -32,6 +32,8 @@ resource "aws_iam_role" "karpenter_controller" {
   tags               = local.tags
 }
 
+data "aws_region" "current" {}
+
 data "aws_iam_policy_document" "karpenter_controller" {
   statement {
     sid    = "EC2NodeManagement"
@@ -89,6 +91,128 @@ data "aws_iam_policy_document" "karpenter_controller" {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = [aws_iam_role.node.arn]
+  }
+
+  # Karpenter v1's EC2NodeClass.spec.role has it manage its own instance
+  # profile (create/tag/attach the role/delete) rather than requiring
+  # one pre-created — these four statements match AWS's own published
+  # Karpenter IAM policy verbatim, scoped by the same tags Karpenter
+  # itself sets on anything it creates, so it can only touch instance
+  # profiles it owns.
+  statement {
+    sid       = "AllowScopedInstanceProfileCreationActions"
+    effect    = "Allow"
+    actions   = ["iam:CreateInstanceProfile"]
+    resources = ["arn:aws:iam::*:instance-profile/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${aws_eks_cluster.this.name}"
+      values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [aws_eks_cluster.this.name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.region]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+
+  statement {
+    sid       = "AllowScopedInstanceProfileTagActions"
+    effect    = "Allow"
+    actions   = ["iam:TagInstanceProfile"]
+    resources = ["arn:aws:iam::*:instance-profile/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${aws_eks_cluster.this.name}"
+      values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.region]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${aws_eks_cluster.this.name}"
+      values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [aws_eks_cluster.this.name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.region]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+
+  statement {
+    sid    = "AllowScopedInstanceProfileActions"
+    effect = "Allow"
+    actions = [
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+      "iam:DeleteInstanceProfile",
+    ]
+    resources = ["arn:aws:iam::*:instance-profile/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${aws_eks_cluster.this.name}"
+      values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.region]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+
+  statement {
+    sid       = "AllowInstanceProfileReadActions"
+    effect    = "Allow"
+    actions   = ["iam:GetInstanceProfile", "iam:ListInstanceProfiles"]
+    resources = ["*"]
   }
 }
 

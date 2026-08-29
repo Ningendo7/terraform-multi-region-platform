@@ -1,5 +1,16 @@
+// tools/platformctl/internal/terraform/plan.go
 package terraform
 
+import (
+	"context"
+	"time"
+)
+
+const PlanTimeout = 10 * time.Minute
+
 func Plan(directory string) error {
-	return Execute(directory, "plan")
+	ctx, cancel := context.WithTimeout(context.Background(), PlanTimeout)
+	defer cancel()
+
+	return Execute(ctx, directory, "plan", "-lock-timeout=30s")
 }

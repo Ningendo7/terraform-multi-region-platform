@@ -1,5 +1,16 @@
+// tools/platformctl/internal/terraform/destroy.go
 package terraform
 
+import (
+	"context"
+	"time"
+)
+
+const DestroyTimeout = 45 * time.Minute
+
 func Destroy(directory string) error {
-	return Execute(directory, "destroy")
+	ctx, cancel := context.WithTimeout(context.Background(), DestroyTimeout)
+	defer cancel()
+
+	return Execute(ctx, directory, "destroy", "-lock-timeout=30s")
 }

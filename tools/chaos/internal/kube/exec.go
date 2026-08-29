@@ -2,25 +2,27 @@ package kube
 
 import (
 	"bytes"
+	"context"
 	"fmt"
-	"os"
 	"os/exec"
+	"strings"
 )
 
 // Run executes kubectl against the given context and returns its stdout.
-// Stderr is passed through directly, matching how internal/terraform
-// wraps the terraform CLI.
-func Run(context string, args ...string) (string, error) {
-	fullArgs := append([]string{"--context", context}, args...)
+// Stderr is captured into the returned error (not just streamed) so callers
+// — and anything logging this — see the real reason a call failed. Callers
+// control cancellation/timeout via ctx; this package never hangs silently.
+func Run(ctx context.Context, kubecontext string, args ...string) (string, error) {
+	fullArgs := append([]string{"--context", kubecontext}, args...)
 
-	cmd := exec.Command("kubectl", fullArgs...)
-	cmd.Stderr = os.Stderr
+	cmd := exec.CommandContext(ctx, "kubectl", fullArgs...)
 
-	var stdout bytes.Buffer
+	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("kubectl %v failed: %w", fullArgs, err)
+		return "", fmt.Errorf("kubectl %v failed: %w: %s", fullArgs, err, strings.TrimSpace(stderr.String()))
 	}
 
 	return stdout.String(), nil
