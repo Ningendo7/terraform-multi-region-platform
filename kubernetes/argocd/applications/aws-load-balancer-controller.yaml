@@ -25,7 +25,7 @@ spec:
         # after any fresh `vpc` apply, same as re-running
         # `aws eks update-kubeconfig` after a fresh `eks` apply.
         region: us-east-1
-        vpcId: vpc-04bcd7384c821cea3
+        vpcId: vpc-049b062b0cdfcf604
 
         serviceAccount:
           create: true

@@ -20,7 +20,7 @@ spec:
         # stack is destroyed and recreated. Update this value after any
         # fresh `vpc` apply.
         region: us-west-2
-        vpcId: vpc-0567f24c9fd573f51
+        vpcId: vpc-09bf5b7302f157081
 
         serviceAccount:
           create: true
