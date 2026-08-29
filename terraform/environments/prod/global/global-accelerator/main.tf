@@ -1,10 +1,10 @@
 resource "aws_globalaccelerator_accelerator" "this" {
-  name            = var.accelerator_name
+  name            = "terraform-multi-region-platform-prod"
   enabled         = true
   ip_address_type = "IPV4"
 
   tags = {
-    Name = var.accelerator_name
+    Name = "terraform-multi-region-platform-prod"
   }
 }
 

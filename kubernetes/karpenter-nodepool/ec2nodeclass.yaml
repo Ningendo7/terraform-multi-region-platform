@@ -1,0 +1,26 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiFamily: AL2023
+
+  amiSelectorTerms:
+    - alias: al2023@latest
+
+  # The node IAM role name, not ARN — EC2NodeClass wants the bare name.
+  role: terraform-multi-region-platform-prod-eks-node
+
+  # Tag-based, not ID-based — subnet/security-group IDs are AWS-assigned
+  # and change every time the vpc or eks stack is destroyed and
+  # recreated (see aws-load-balancer-controller.yaml's vpcId for what
+  # happens when that lesson gets forgotten). These tags are ours and
+  # stay stable across rebuilds.
+  subnetSelectorTerms:
+    - tags:
+        Tier: private
+        Project: terraform-multi-region-platform
+
+  securityGroupSelectorTerms:
+    - tags:
+        aws:eks:cluster-name: terraform-multi-region-platform-prod

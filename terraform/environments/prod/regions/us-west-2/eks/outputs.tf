@@ -42,3 +42,13 @@ output "external_dns_role_arn" {
   description = "ARN of the IAM role ExternalDNS's service account assumes."
   value       = module.eks.external_dns_role_arn
 }
+
+output "node_iam_role_arn" {
+  description = "ARN of the IAM role Karpenter-launched EC2 nodes run as."
+  value       = module.eks.node_iam_role_arn
+}
+
+output "node_instance_profile_name" {
+  description = "Name of the instance profile Karpenter attaches to nodes it launches."
+  value       = module.eks.node_instance_profile_name
+}
