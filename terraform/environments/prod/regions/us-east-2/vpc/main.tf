@@ -4,7 +4,7 @@ module "flow_log_kms" {
   project_name = "terraform-multi-region-platform"
   environment  = "prod"
 
-  description            = "VPC flow logs KMS key — us-west-2"
+  description            = "VPC flow logs KMS key — us-east-2"
   name_suffix            = "vpc-flow-logs"
   enable_cloudwatch_logs = true
 }
@@ -27,7 +27,7 @@ module "vpc" {
 
   # IAM is account-wide, not regional — without this, module.vpc's
   # flow_logs IAM role would collide with us-east-1's.
-  name_suffix = "us-west-2"
+  name_suffix = "us-east-2"
 
   public_subnet_tags = {
     "kubernetes.io/cluster/terraform-multi-region-platform-prod" = "shared"

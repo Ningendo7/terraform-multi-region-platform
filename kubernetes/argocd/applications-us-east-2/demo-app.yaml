@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: karpenter-nodepool
+  name: demo-app
   namespace: argocd
 spec:
   project: default
@@ -9,15 +9,17 @@ spec:
   source:
     repoURL: https://github.com/Ningendo7/terraform-multi-region-platform.git
     targetRevision: main
-    path: kubernetes/karpenter-nodepool-us-west-2
+    path: kubernetes/demo-app-us-east-2
     directory:
       recurse: true
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: demo
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

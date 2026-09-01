@@ -12,7 +12,7 @@ metadata:
     # conflict. Unifying these under one hostname with real
     # latency/geo routing is exactly what Global Accelerator/Route53
     # routing policies are for, later — not something to fake here.
-    external-dns.alpha.kubernetes.io/hostname: demo-us-west-2.tendo.pro
+    external-dns.alpha.kubernetes.io/hostname: demo-us-east-2.tendo.pro
 spec:
   ingressClassName: alb
   rules:

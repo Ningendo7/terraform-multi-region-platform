@@ -3,7 +3,7 @@ data "terraform_remote_state" "eks" {
 
   config = {
     bucket = "terraform-multi-region-platform-prod-terraform-state"
-    key    = "regions/us-west-2/eks/terraform.tfstate"
+    key    = "regions/us-east-2/eks/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -13,7 +13,7 @@ data "terraform_remote_state" "vpc" {
 
   config = {
     bucket = "terraform-multi-region-platform-prod-terraform-state"
-    key    = "regions/us-west-2/vpc/terraform.tfstate"
+    key    = "regions/us-east-2/vpc/terraform.tfstate"
     region = "us-east-1"
   }
 }

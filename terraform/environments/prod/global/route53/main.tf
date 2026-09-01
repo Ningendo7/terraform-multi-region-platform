@@ -15,7 +15,7 @@ data "terraform_remote_state" "global_accelerator" {
 }
 
 # The real multi-region entry point — distinct from demo.<domain> and
-# demo-us-west-2.<domain>, which each region's ExternalDNS already owns
+# demo-us-east-2.<domain>, which each region's ExternalDNS already owns
 # and points straight at its own regional ALB. This one goes through
 # Global Accelerator instead, so it's whichever region is actually
 # healthy, not a fixed region.

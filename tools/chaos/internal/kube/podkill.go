@@ -1,4 +1,3 @@
-// tools/chaos/internal/kube/podkill.go
 package kube
 
 import (

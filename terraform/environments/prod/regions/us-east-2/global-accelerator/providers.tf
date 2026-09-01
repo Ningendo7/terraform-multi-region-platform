@@ -1,12 +1,12 @@
 provider "aws" {
 
-  region = "us-west-2"
+  region = "us-east-2"
 
   default_tags {
     tags = {
       Project     = "terraform-multi-region-platform"
       Environment = "prod"
-      Region      = "us-west-2"
+      Region      = "us-east-2"
       ManagedBy   = "Terraform"
     }
   }
@@ -14,9 +14,10 @@ provider "aws" {
 }
 
 # Global Accelerator's control-plane API only exists in us-west-2 —
-# this happens to be the same region as the default provider above,
-# but it's kept as an explicit alias anyway so this stack matches its
-# us-east-1 sibling exactly and doesn't rely on the coincidence.
+# that applies to this endpoint group too, even though it points at a
+# us-east-2 ALB. This alias is used only for the endpoint group itself;
+# the ALB lookup below still runs against the default (us-east-2)
+# provider, since that's actually where the ALB lives.
 provider "aws" {
   alias = "global_accelerator"
 
@@ -26,7 +27,7 @@ provider "aws" {
     tags = {
       Project     = "terraform-multi-region-platform"
       Environment = "prod"
-      Region      = "us-west-2"
+      Region      = "us-east-2"
       ManagedBy   = "Terraform"
     }
   }

@@ -19,7 +19,7 @@ spec:
           create: true
           name: external-dns
           annotations:
-            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-usw2-external-dns
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-use2-external-dns
 
         domainFilters:
           - tendo.pro
@@ -27,13 +27,13 @@ spec:
         # Distinct from us-east-1's txtOwnerId on purpose — two
         # ExternalDNS instances managing the same zone need different
         # owner IDs so their ownership TXT records don't collide.
-        txtOwnerId: terraform-multi-region-platform-prod-us-west-2
+        txtOwnerId: terraform-multi-region-platform-prod-us-east-2
 
         policy: sync
 
         env:
           - name: AWS_DEFAULT_REGION
-            value: us-west-2
+            value: us-east-2
 
   destination:
     server: https://kubernetes.default.svc

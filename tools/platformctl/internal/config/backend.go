@@ -3,7 +3,7 @@ package config
 import "fmt"
 
 func stateBucket() string {
-	return fmt.Sprintf("%s-%s-terraform-state", ProjectName, Environment)
+	return fmt.Sprintf("%s-%s-terraform-state", ProjectName(), Environment())
 }
 
 // BackendConfig computes the terraform init -backend-config values for a
@@ -39,7 +39,7 @@ func BackendConfig(stack Stack) (map[string]string, error) {
 	return map[string]string{
 		"bucket":       stateBucket(),
 		"key":          key,
-		"region":       StateRegion,
+		"region":       StateRegion(),
 		"use_lockfile": "true",
 		"encrypt":      "true",
 	}, nil

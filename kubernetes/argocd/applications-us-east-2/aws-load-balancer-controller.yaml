@@ -19,14 +19,14 @@ spec:
         # NOTE: vpcId is AWS-assigned — it changes every time the vpc
         # stack is destroyed and recreated. Update this value after any
         # fresh `vpc` apply.
-        region: us-west-2
+        region: us-east-2
         vpcId: vpc-09bf5b7302f157081
 
         serviceAccount:
           create: true
           name: aws-load-balancer-controller
           annotations:
-            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-usw2-lb-controller
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-use2-lb-controller
 
   destination:
     server: https://kubernetes.default.svc

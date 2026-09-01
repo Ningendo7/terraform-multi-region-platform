@@ -32,7 +32,7 @@ resource "aws_globalaccelerator_endpoint_group" "demo_app" {
 
   listener_arn = data.terraform_remote_state.global_accelerator.outputs.listener_arn
 
-  endpoint_group_region = "us-west-2"
+  endpoint_group_region = "us-east-2"
 
   endpoint_configuration {
     endpoint_id = data.aws_resourcegroupstaggingapi_resources.demo_app_alb.resource_tag_mapping_list[0].resource_arn

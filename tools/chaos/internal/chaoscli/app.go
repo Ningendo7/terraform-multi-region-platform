@@ -1,4 +1,3 @@
-// tools/chaos/internal/chaoscli/app.go
 package chaoscli
 
 import (

@@ -9,7 +9,7 @@ spec:
     - alias: al2023@latest
 
   # The node IAM role name, not ARN — EC2NodeClass wants the bare name.
-  role: terraform-multi-region-platform-prod-usw2-eks-node
+  role: terraform-multi-region-platform-prod-use2-eks-node
 
   # Tag-based, not ID-based — subnet/security-group IDs are AWS-assigned
   # and change every time the vpc or eks stack is destroyed and

@@ -35,7 +35,7 @@ func ResolveStack(stack Stack) (string, error) {
 		return "", err
 	}
 
-	base := filepath.Join(root, "terraform", "environments", Environment)
+	base := filepath.Join(root, "terraform", "environments", Environment())
 
 	switch stack.Scope {
 

@@ -7,7 +7,7 @@ data "terraform_remote_state" "vpc" {
 
   config = {
     bucket = "terraform-multi-region-platform-prod-terraform-state"
-    key    = "regions/us-west-2/vpc/terraform.tfstate"
+    key    = "regions/us-east-2/vpc/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -24,10 +24,10 @@ module "eks" {
 
   # IAM is account-wide, not regional — without this, every IAM role
   # this module creates would collide with us-east-1's. Abbreviated
-  # ("usw2" not "us-west-2") because IAM role names cap at 64 chars —
+  # ("use2" not "us-east-2") because IAM role names cap at 64 chars —
   # the full region name pushed the longest one (karpenter-controller)
   # to 67.
-  name_suffix = "usw2"
+  name_suffix = "use2"
 
   # Same shared zone as us-east-1 — one hosted zone for the whole
   # platform, not one per region.

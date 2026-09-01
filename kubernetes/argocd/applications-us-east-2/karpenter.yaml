@@ -22,7 +22,7 @@ spec:
           # support Pod Identity, and this controller has to run on
           # Fargate to bootstrap before any EC2 node exists.
           annotations:
-            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-usw2-karpenter-controller
+            eks.amazonaws.com/role-arn: arn:aws:iam::807906459006:role/terraform-multi-region-platform-prod-use2-karpenter-controller
 
   destination:
     server: https://kubernetes.default.svc
