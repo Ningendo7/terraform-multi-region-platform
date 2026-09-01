@@ -25,6 +25,18 @@ func Execute(args []string) error {
 
 		return runExperiment(args[1], args[2:])
 
+	case "restore":
+
+		opts, err := ParseRestoreFlags(args[1:])
+		if err != nil {
+			return err
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
+		return kube.Restore(ctx, opts.Context)
+
 	default:
 		return fmt.Errorf("unknown command: %s", args[0])
 	}
@@ -48,6 +60,21 @@ func runExperiment(name string, args []string) error {
 		defer cancel()
 
 		return kube.PodKill(ctx, opts.Context, opts.Namespace, opts.Label, opts.DryRun, opts.Yes, opts.Seed)
+
+	case "node-failure":
+
+		opts, err := ParseNodeFailureFlags(args)
+		if err != nil {
+			return err
+		}
+
+		// Unlike pod-kill, this one deliberately blocks for up to
+		// --window waiting to auto-restore, so the timeout has to cover
+		// the whole window plus real headroom for the cordon/evict
+		// calls — not a fixed short duration.
+		ctx, cancel := context.WithTimeout(context.Background(), opts.Window+2*time.Minute)
+		defer cancel()
+		return kube.NodeFailure(ctx, opts.Context, opts.Region, opts.AZ, opts.Count, opts.Window, opts.Force, opts.DryRun, opts.Yes, opts.Seed)
 
 	default:
 		return fmt.Errorf("unknown experiment: %s", name)

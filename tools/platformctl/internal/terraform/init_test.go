@@ -1,4 +1,3 @@
-// tools/platformctl/internal/terraform/init_test.go
 package terraform
 
 import (

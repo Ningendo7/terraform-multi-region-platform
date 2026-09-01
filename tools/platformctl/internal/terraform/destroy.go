@@ -1,4 +1,3 @@
-// tools/platformctl/internal/terraform/destroy.go
 package terraform
 
 import (

@@ -1,4 +1,3 @@
-// tools/platformctl/internal/checks/tools.go
 package checks
 
 import (

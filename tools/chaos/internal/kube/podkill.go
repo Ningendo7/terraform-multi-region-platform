@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/Ningendo7/terraform-multi-region-platform/tools/chaos/internal/safety"
 )
 
 // PodKill deletes one pod matching label within namespace, on the cluster
@@ -20,8 +22,8 @@ import (
 // whole job is destructive, so the destructive path should never be the
 // accidental default.
 func PodKill(ctx context.Context, kubeContext, namespace, label string, dryRun, yes bool, seed int64) error {
-	if !dryRun && !yes {
-		return fmt.Errorf("refusing to delete without --dry-run or --yes")
+	if err := safety.RequireConfirmation(dryRun, yes); err != nil {
+		return err
 	}
 
 	out, err := Run(ctx, kubeContext, "get", "pods", "-n", namespace, "-l", label, "-o", "name")

@@ -1,4 +1,3 @@
-// tools/platformctl/internal/config/constants.go
 package config
 
 import "os"

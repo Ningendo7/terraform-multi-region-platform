@@ -1,4 +1,3 @@
-// tools/platformctl/internal/cli/doctor.go
 package cli
 
 import (

@@ -1,4 +1,3 @@
-// tools/platformctl/internal/terraform/exec.go
 package terraform
 
 import (

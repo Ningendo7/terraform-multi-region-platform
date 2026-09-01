@@ -1,4 +1,3 @@
-// tools/platformctl/internal/terraform/plan.go
 package terraform
 
 import (

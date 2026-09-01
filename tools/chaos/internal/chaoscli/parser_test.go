@@ -1,4 +1,3 @@
-// tools/chaos/internal/chaoscli/parser_test.go
 package chaoscli
 
 import "testing"
